@@ -64,6 +64,7 @@
             background-color: #357ae8;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="welcome-container">
@@ -74,6 +75,10 @@
     </div>
 
     <script>
+        const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN';
+        const REPO_OWNER = 'YOUR_GITHUB_USERNAME';
+        const REPO_NAME = 'YOUR_REPO_NAME';
+
         function checkAuthentication() {
             const isAuthenticated = localStorage.getItem('isAuthenticated');
             if (!isAuthenticated) {
@@ -83,14 +88,12 @@
 
         function loadFiles() {
             const files = ['index.html', 'app.html', 'reg.html']; // Додайте сюди ваші файли
-            const fileList = document.getElementById('file-list');
-            fileList.innerHTML = '';
+            const fileList = $('#file-list');
+            fileList.empty();
 
             files.forEach(file => {
-                const button = document.createElement('button');
-                button.textContent = file;
-                button.onclick = () => loadFileContent(file);
-                fileList.appendChild(button);
+                const button = $('<button></button>').text(file).click(() => loadFileContent(file));
+                fileList.append(button);
             });
         }
 
@@ -99,48 +102,63 @@
             if (savedContent) {
                 displayContent(savedContent, filename);
             } else {
-                fetch(filename)
-                    .then(response => response.text())
-                    .then(content => {
-                        displayContent(content, filename);
-                    })
-                    .catch(error => console.error('Помилка завантаження вмісту файлу:', error));
+                $.get(filename, content => {
+                    displayContent(content, filename);
+                }).fail(error => console.error('Помилка завантаження вмісту файлу:', error));
             }
         }
 
         function displayContent(content, filename) {
-            const editableContent = document.getElementById('editable-content');
-            editableContent.innerHTML = content;
+            const editableContent = $('#editable-content');
+            editableContent.html(content);
             makeTextEditable(editableContent);
-            editableContent.dataset.filename = filename;
+            editableContent.data('filename', filename);
         }
 
         function makeTextEditable(element) {
-            const walker = document.createTreeWalker(element, NodeFilter.SHOW_ELEMENT, null, false);
-            let node;
-            while (node = walker.nextNode()) {
-                if (node.nodeType === Node.ELEMENT_NODE && node.childNodes.length === 1 && node.childNodes[0].nodeType === Node.TEXT_NODE) {
-                    node.contentEditable = true;
+            element.find('*').each(function() {
+                if (this.childNodes.length === 1 && this.childNodes[0].nodeType === Node.TEXT_NODE) {
+                    $(this).attr('contenteditable', 'true');
                 }
-            }
+            });
         }
 
         function saveContent() {
-            const editableContent = document.getElementById('editable-content');
-            const content = editableContent.innerHTML;
-            const filename = editableContent.dataset.filename;
+            const editableContent = $('#editable-content');
+            const content = editableContent.html();
+            const filename = editableContent.data('filename');
 
-            localStorage.setItem(filename, content);
-            alert('Зміни збережено локально!');
+            const message = `Update ${filename}`;
+            const sha = ''; // Отримайте SHA файлу за допомогою GitHub API
+
+            $.ajax({
+                url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
+                type: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    message: message,
+                    content: btoa(content),
+                    sha: sha
+                }),
+                success: function(response) {
+                    alert('Файл успішно збережено на GitHub!');
+                },
+                error: function(error) {
+                    console.error('Помилка збереження файлу:', error);
+                }
+            });
         }
 
         checkAuthentication();
 
         const username = localStorage.getItem('currentUser');
-        const welcomeMessage = document.getElementById('welcome-message');
+        const welcomeMessage = $('#welcome-message');
 
         if (username) {
-            welcomeMessage.textContent = `Привіт, ${username}!`;
+            welcomeMessage.text(`Привіт, ${username}!`);
         }
 
         loadFiles();
