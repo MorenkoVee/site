@@ -98,14 +98,10 @@
         }
 
         function loadFileContent(filename) {
-            const savedContent = localStorage.getItem(filename);
-            if (savedContent) {
-                displayContent(savedContent, filename);
-            } else {
-                $.get(filename, content => {
-                    displayContent(content, filename);
-                }).fail(error => console.error('Помилка завантаження вмісту файлу:', error));
-            }
+            const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${filename}`;
+            $.get(url, content => {
+                displayContent(content, filename);
+            }).fail(error => console.error('Помилка завантаження вмісту файлу:', error));
         }
 
         function displayContent(content, filename) {
