@@ -76,9 +76,9 @@
     </div>
 
     <script>
-        const GITHUB_TOKEN = 'NWpAGvAf2a4mVS4IttwN31AAOPYKk1kaZqfBmSIsc9w=';
-        const REPO_OWNER = 'MorenkoVee';
-        const REPO_NAME = 'site';
+        const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN';
+        const REPO_OWNER = 'YOUR_GITHUB_USERNAME';
+        const REPO_NAME = 'YOUR_REPO_NAME';
 
         function checkAuthentication() {
             const isAuthenticated = localStorage.getItem('isAuthenticated');
@@ -120,32 +120,49 @@
             });
         }
 
+        function getFileSha(filename, callback) {
+            $.ajax({
+                url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
+                type: 'GET',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`
+                },
+                success: function(response) {
+                    callback(response.sha);
+                },
+                error: function(error) {
+                    console.error('Помилка отримання SHA файлу:', error);
+                }
+            });
+        }
+
         function saveContent() {
             const editableContent = $('#editable-content');
             const content = editableContent.html();
             const filename = editableContent.data('filename');
 
-            const message = `Update ${filename}`;
-            const sha = ''; // Отримайте SHA файлу за допомогою GitHub API
+            getFileSha(filename, function(sha) {
+                const message = `Update ${filename}`;
 
-            $.ajax({
-                url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
-                type: 'PUT',
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                data: JSON.stringify({
-                    message: message,
-                    content: btoa(content),
-                    sha: sha
-                }),
-                success: function(response) {
-                    alert('Файл успішно збережено на GitHub!');
-                },
-                error: function(error) {
-                    console.error('Помилка збереження файлу:', error);
-                }
+                $.ajax({
+                    url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
+                    type: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        message: message,
+                        content: Base64.encode(content),
+                        sha: sha
+                    }),
+                    success: function(response) {
+                        alert('Файл успішно збережено на GitHub!');
+                    },
+                    error: function(error) {
+                        console.error('Помилка збереження файлу:', error);
+                    }
+                });
             });
         }
 
