@@ -160,7 +160,7 @@
                         alert('Файл успішно збережено на GitHub!');
                     },
                     error: function(error) {
-                        console.error('Помилка отримання SHA файлу:', error);
+                        console.error('Помилка збереження файлу:', error);
                         alert(`Помилка отримання SHA файлу: ${error.responseText}`);
                     }
                 });
