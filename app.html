@@ -136,34 +136,31 @@
             });
         }
 
-        function saveContent() {
+       function saveContent() {
             const editableContent = $('#editable-content');
             const content = editableContent.html();
             const filename = editableContent.data('filename');
 
-            getFileSha(filename, function(sha) {
-                const message = `Update ${filename}`;
+            const message = `Update ${filename}`;
+            const sha = ''; // Отримайте SHA файлу за допомогою GitHub API
 
-                $.ajax({
-                    url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
-                    type: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    data: JSON.stringify({
-                        message: message,
-                        content: Base64.encode(content),
-                        sha: sha
-                    }),
-                    success: function(response) {
-                        alert('Файл успішно збережено на GitHub!');
-                    },
-                    error: function(error) {
-                        console.error('Помилка збереження файлу:', error);
-                        alert(`Помилка отримання SHA файлу: ${error.responseText}`);
-                    }
-                });
+            $.ajax({
+                url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
+                type: 'PUT',
+                headers: {
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                    message: message,
+                    content: btoa(content)
+                }),
+                success: function(response) {
+                    alert('Файл успішно збережено на GitHub!');
+                },
+                error: function(error) {
+                    console.error('Помилка збереження файлу:', error);
+                }
             });
         }
 
