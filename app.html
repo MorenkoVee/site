@@ -141,27 +141,28 @@
             const content = editableContent.html();
             const filename = editableContent.data('filename');
 
-            const message = `Update ${filename}`;
-            const sha = '8ecee59af10f8ebf3a09599592830a2a64cce231'; // Отримайте SHA файлу за допомогою GitHub API
+            getFileSha(filename, function(sha) {
+                const message = `Update ${filename}`;
 
-            $.ajax({
-                url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
-                type: 'PUT',
-                headers: {
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                data: JSON.stringify({
-                    message: message,
-                    content: Base64.encode(content),
-                    sha: sha
-                }),
-                success: function(response) {
-                    alert('Файл успішно збережено на GitHub!');
-                },
-                error: function(error) {
-                    console.error('Помилка збереження файлу:', error);
-                }
+                $.ajax({
+                    url: `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
+                    type: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                        message: message,
+                        content: Base64.encode(content),
+                        sha: sha
+                    }),
+                    success: function(response) {
+                        alert('Файл успішно збережено на GitHub!');
+                    },
+                    error: function(error) {
+                        console.error('Помилка збереження файлу:', error);
+                    }
+                });
             });
         }
 
