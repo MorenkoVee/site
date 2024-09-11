@@ -16,6 +16,12 @@
             margin-left: 10px;
             color: #2e2e2e;
         }
+        .pmenu-drop:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown-content {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -23,9 +29,7 @@
 <div class="navbar">
     <a class="pmenu" href="#home">Home</a>
     <div class="dropdown">
-        <button class="pmenu">Services 
-            <i class="fa fa-caret-down"></i>
-        </button>
+        <a class="pmenu pmenu-drop" href="#home">Services</a>
         <div class="dropdown-content">
             <a class="pmenu" href="#webdesign">Web Design</a>
             <a class="pmenu" href="#development">Development</a>
