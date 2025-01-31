@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Керування ліками</title>
+    <!-- Material Design -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 64px;
+        }
+        .mdc-top-app-bar {
+            margin-bottom: 20px;
+            background-color: #1976d2;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        .mdc-top-app-bar .mdc-button {
+            color: white;
+            margin: 0 4px;
+        }
+        .mdc-top-app-bar .mdc-button--raised {
+            background-color: #2196f3;
+        }
+        .mdc-top-app-bar .mdc-button:not(.mdc-button--raised):hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .medication-form {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .medication-form .mdc-text-field {
+            margin-right: 16px;
+            margin-bottom: 16px;
+        }
+        .medication-list {
+            margin-top: 20px;
+        }
+        .medication-item {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Адаптивні стилі */
+        @media (max-width: 600px) {
+            .mdc-top-app-bar .mdc-button__label {
+                display: none;
+            }
+            
+            .mdc-top-app-bar .material-icons {
+                margin: 0;
+            }
+            
+            .mdc-top-app-bar .mdc-button {
+                min-width: 48px;
+                padding: 0 8px;
+            }
+            
+            .main-content {
+                padding: 16px;
+                margin-top: 56px;
+            }
+            
+            .medication-form {
+                padding: 16px;
+            }
+            
+            .medication-form .mdc-text-field {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .medication-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+            
+            .mdc-typography--headline5 {
+                font-size: 20px;
+                margin: 12px 0;
+            }
+            
+            .medication-form button {
+                width: 100%;
+                margin-top: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="mdc-typography">
+    <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <span class="mdc-top-app-bar__title">Керування ліками</span>
+            </section>
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+                <a href="index.html" class="mdc-button">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="material-icons">today</span>
+                    <span class="mdc-button__label">Сьогодні</span>
+                </a>
+                <a href="history.html" class="mdc-button">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="material-icons">history</span>
+                    <span class="mdc-button__label">Історія</span>
+                </a>
+                <a href="manage.html" class="mdc-button mdc-button--raised">
+                    <span class="mdc-button__ripple"></span>
+                    <span class="material-icons">medication</span>
+                    <span class="mdc-button__label">Керування</span>
+                </a>
+            </section>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="medication-form">
+            <h2 class="mdc-typography--headline5">Додати новий препарат</h2>
+            <label class="mdc-text-field mdc-text-field--outlined">
+                <span class="mdc-notched-outline">
+                    <span class="mdc-notched-outline__leading"></span>
+                    <span class="mdc-notched-outline__notch">
+                        <span class="mdc-floating-label">Назва препарату</span>
+                    </span>
+                    <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input type="text" id="medName" class="mdc-text-field__input" required>
+            </label>
+            
+            <label class="mdc-text-field mdc-text-field--outlined">
+                <span class="mdc-notched-outline">
+                    <span class="mdc-notched-outline__leading"></span>
+                    <span class="mdc-notched-outline__notch">
+                        <span class="mdc-floating-label">Дозування</span>
+                    </span>
+                    <span class="mdc-notched-outline__trailing"></span>
+                </span>
+                <input type="text" id="dosage" class="mdc-text-field__input">
+            </label>
+            
+            <button class="mdc-button mdc-button--raised" onclick="addMedication()">
+                <span class="mdc-button__ripple"></span>
+                <span class="material-icons">add</span>
+                <span class="mdc-button__label">Додати препарат</span>
+            </button>
+        </div>
+
+        <div id="medicationList" class="medication-list">
+            <!-- Тут будуть відображатися ліки -->
+        </div>
+    </div>
+
+    <script src="js/manage.js"></script>
+    <script>
+        // Ініціалізація MDC компонентів
+        mdc.autoInit();
+        // Ініціалізація текстових полів
+        document.querySelectorAll('.mdc-text-field').forEach(textField => {
+            new mdc.textField.MDCTextField(textField);
+        });
+        // Ініціалізація кнопок
+        document.querySelectorAll('.mdc-button').forEach(button => {
+            new mdc.ripple.MDCRipple(button);
+        });
+    </script>
+</body>
+</html> 
